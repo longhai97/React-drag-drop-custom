@@ -26,12 +26,14 @@ export default class App extends React.Component {
     };
 
     onDragEnd = () => {
-        this.draggedIdx = null;
+        const onChange = this.props.onChange || (() => {});
+        onChange(this.state.items);
     };
 
 
     render() {
-        return (
+      console.log(this.state.items);
+      return (
             <div className="App">
                 <main>
                     <h3>List of items</h3>
@@ -45,8 +47,8 @@ export default class App extends React.Component {
                                     onDragEnd={ this.onDragEnd }
                                 >
                                     <Hambuger/>
+                                  <span className={'content'}>{item}</span>
                                 </div>
-                                <span className={'content'}>{item}</span>
                             </li>
                         ))}
                     </ul>
