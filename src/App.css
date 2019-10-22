@@ -39,3 +39,7 @@
   height: 2rem;
   color: #fff;
 }
+
+.container {
+  padding: 0 15px;
+}

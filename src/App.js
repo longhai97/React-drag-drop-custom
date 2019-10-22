@@ -1,59 +1,47 @@
-import React from 'react';
-import {ReactComponent as Hambuger} from "./hamburger.svg";
 import './App.css';
+import React, { Component } from 'react';
+import { connect } from "react-redux";
+import { increase } from "./actions";
 
-export default class App extends React.Component {
-    state = {
-        items: ["🍰 Cake", "🍩 Donut", "🍎 Apple", "🍕 Pizza"]
-    };
-
-    onDragStart = (e, index) => {
-        this.draggedItem = this.state.items[index];
-        e.dataTransfer.effectAllowed = "move";
-        e.dataTransfer.setData("text/html", e.target.parentNode);
-        e.dataTransfer.setDragImage(e.target.parentNode, 20, 20);
-    };
-
-    onDragOver = (index) => {
-        const draggedOverItem = this.state.items[index];
-        if (this.draggedItem === draggedOverItem) {
-            return;
-        }
-        let items = this.state.items.filter(item => item !== this.draggedItem);
-
-        items.splice(index, 0, this.draggedItem);
-        this.setState({items});
-    };
-
-    onDragEnd = () => {
-        const onChange = this.props.onChange || (() => {});
-        onChange(this.state.items);
-    };
-
+class IncreaseButton extends Component {
 
     render() {
-      console.log(this.state.items);
-      return (
-            <div className="App">
-                <main>
-                    <h3>List of items</h3>
-                    <ul>
-                        {this.state.items.map((item, idx) => (
-                            <li key={item} onDragOver={() => this.onDragOver(idx)}>
-                                <div
-                                    className="drag"
-                                    draggable
-                                    onDragStart={ (e) => this.onDragStart(e, idx) }
-                                    onDragEnd={ this.onDragEnd }
-                                >
-                                    <Hambuger/>
-                                  <span className={'content'}>{item}</span>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
-                </main>
-            </div>
+        const { updating, onClick } = this.props;
+
+        return (
+            <button onClick={onClick} disabled={updating}>
+                { updating ? 'Calculating' : 'Count' }
+            </button>
         );
     }
 }
+
+class App extends Component {
+
+   render() {
+
+        const { count, increase, updating } = this.props;
+
+        return (
+          <div className={'container'}>
+             <h1>{count}</h1>
+             <IncreaseButton updating={updating} onClick={() => increase(1, count)}/>
+          </div>
+        )
+   }
+}
+
+const mapStateToProps = (state) => {
+    return {
+        count: state.count,
+        updating: state.updating
+    }
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        increase: increase(dispatch)
+    }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
